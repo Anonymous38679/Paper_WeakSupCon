@@ -1,4 +1,4 @@
-# python WeakSupCon_Camelyon16_with_SRA_augmentation.py
+# python WeakSupCon.py
 
 from __future__ import print_function
 

@@ -317,18 +317,12 @@ def set_loader_no_balance(opt, dataset_type):
         Train_tumor_dataset = ImageSingleLabelDataset(images_root_path_for_each_category[1], list_of_list_txt_path[1], image_transform, 1)
     elif opt.dataset == 'KidneyRVT':
         print(f'Start loading {opt.dataset} dataset...')
-        train_000_txt_file="/your_own_path/202404_MIL/croped_tiles/20240601/tiles_10X/ccRCC_No_LN_Mets_No_RV_Thrombus_No_PNI/20250105_qualified_train_tiles_list.txt"
-        train_001_txt_file="/your_own_path/202404_MIL/croped_tiles/20240601/tiles_10X/ccRCC_No_LN_Mets_No_RV_Thrombus_with_PNI/20250105_qualified_train_tiles_list.txt"
-        train_010_txt_file="/your_own_path/202404_MIL/croped_tiles/20240601/tiles_10X/ccRCC_No_LN_Mets_with_RV_Thrombus_No_PNI/20250105_qualified_train_tiles_list.txt"
-        train_011_txt_file="/your_own_path/202404_MIL/croped_tiles/20240601/tiles_10X/ccRCC_No_LN_Mets_with_RV_Thrombus_with_PNI/20250105_qualified_train_tiles_list.txt"
-        train_100_txt_file="/your_own_path/202404_MIL/croped_tiles/20240601/tiles_10X/ccRCC_with_LN_Mets_No_RV_Thrombus_No_PNI/20250105_qualified_train_tiles_list.txt"
-        train_101_txt_file="/your_own_path/202404_MIL/croped_tiles/20240601/tiles_10X/ccRCC_with_LN_Mets_No_RV_Thrombus_with_PNI/20250105_qualified_train_tiles_list.txt"
-        train_110_txt_file="/your_own_path/202404_MIL/croped_tiles/20240601/tiles_10X/ccRCC_with_LN_Mets_with_RV_Thrombus_No_PNI/20250105_qualified_train_tiles_list.txt"
-        train_111_txt_file="/your_own_path/202404_MIL/croped_tiles/20240601/tiles_10X/ccRCC_with_LN_Mets_with_RV_Thrombus_with_PNI/20250105_qualified_train_tiles_list.txt"
+        train_0_txt_file="/your_own_path/202404_MIL/croped_tiles/20240601/tiles_10X/No_RV_Thrombus/20250105_qualified_train_tiles_list.txt"
+        train_1_txt_file="/your_own_path/202404_MIL/croped_tiles/20240601/tiles_10X/with_RV_Thrombus/20250105_qualified_train_tiles_list.txt"
         images_root_path_for_each_category=["/your_own_path2/Lab_kidney/cropped_tiles_20240601/tiles_10X",
                                             "/your_own_path2/Lab_kidney/cropped_tiles_20240601/tiles_10X"]
-        list_of_list_txt_path=[[train_000_txt_file,train_001_txt_file, train_100_txt_file, train_101_txt_file],
-                                    [train_010_txt_file, train_011_txt_file, train_110_txt_file, train_111_txt_file]]
+        list_of_list_txt_path=[[train_0_txt_file],
+                                [train_1_txt_file]]
         print('Start ImageSingleLabelDataset...')
         Train_normal_dataset = ImageSingleLabelDataset(images_root_path_for_each_category[0], list_of_list_txt_path[0], image_transform, 0)
         Train_RVT_dataset = ImageSingleLabelDataset(images_root_path_for_each_category[1], list_of_list_txt_path[1], image_transform, 1)

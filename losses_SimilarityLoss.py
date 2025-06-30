@@ -5,8 +5,6 @@ import torch
 import torch.nn as nn
 
 class SimilarityLoss(nn.Module):
-    """SimilarityLoss is created in WeakSupCon by referring to SupConLoss from Supervised Contrastive Learning: https://arxiv.org/pdf/2004.11362.pdf.
-    However, the definition of SimilarityLoss from SupConLoss"""
     """features_neg is usually set to None"""
     def __init__(self, temperature=0.07, contrast_mode='all',
                  base_temperature=0.07):

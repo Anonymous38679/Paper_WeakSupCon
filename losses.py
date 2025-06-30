@@ -2,10 +2,7 @@
 # This code is copied from the Supervised Contrastive Learning paper:
 """Supervised Contrastive Learning: https://arxiv.org/pdf/2004.11362.pdf.
     It also supports the unsupervised contrastive loss in SimCLR"""
-"""
-Author: Yonglong Tian (yonglong@mit.edu)
-Date: May 07, 2020
-"""
+
 from __future__ import print_function
 
 import torch

@@ -1,7 +1,6 @@
 
-# This losses.py file is copied from the Supervised Contrastive Learning paper:
-"""Supervised Contrastive Learning: https://arxiv.org/pdf/2004.11362.pdf.
-    It also supports the unsupervised contrastive loss in SimCLR"""
+# This losses.py file is copied from the Supervised Contrastive Learning paper
+# It also supports the unsupervised contrastive loss in SimCLR
 
 from __future__ import print_function
 

@@ -17,7 +17,7 @@ from util import TwoCropTransform, AverageMeter
 from util import adjust_learning_rate, warmup_learning_rate
 from util import set_optimizer, save_model
 from networks.backbone_models import EncoderProjHead
-from losses import SupConLoss
+from losses import SupConLoss#SupConLoss will be SimCLR loss if no labels are provided
 from losses_SimilarityLoss import SimilarityLoss
 import gc #gabrage collection
 from torch.utils.data import Dataset, DataLoader, Sampler
@@ -468,7 +468,8 @@ def set_loader_no_balance(opt, dataset_type):
         
 def set_model(opt,local_rank):
     model = EncoderProjHead(name=opt.model)#use resnet18(standard version for 224x224)
-    criterionSupCon = SupConLoss(temperature=opt.temp)
+    #SupConLoss will be SimCLR loss if no labels are provided
+    criterionSimCLR = SupConLoss(temperature=opt.temp)
     criterionSimilarity = SimilarityLoss(temperature=opt.temp)
     
     # enable synchronized Batch Normalization, for running on multiple GPUs
@@ -482,22 +483,22 @@ def set_model(opt,local_rank):
             model = model.cuda()
 
         if count_GPUS_used>1:
-            criterionSupCon = criterionSupCon.to(local_rank)
+            criterionSimCLR = criterionSimCLR.to(local_rank)
             criterionSimilarity = criterionSimilarity.to(local_rank)
         else:
-            criterionSupCon = criterionSupCon.cuda()
+            criterionSimCLR = criterionSimCLR.cuda()
             criterionSimilarity = criterionSimilarity.cuda()
         
         if USE_RANDOM_SEED:
             torch.backends.cudnn.benchmark = False
             torch.backends.cudnn.deterministic = True
             
-    return model, criterionSupCon, criterionSimilarity
+    return model, criterionSimCLR, criterionSimilarity
 
 def save_checkpoint(state, is_best, filename=output_dir+'/checkpoint.pth.tar'):
     torch.save(state, filename)
 
-def train(model, criterionSupCon, criterionSimilarity, optimizer, scaler, epoch, opt, loader0, loader1):
+def train(model, criterionSimCLR, criterionSimilarity, optimizer, scaler, epoch, opt, loader0, loader1):
 
     """one epoch training"""
     if DEBUG_MODE:
@@ -559,9 +560,9 @@ def train(model, criterionSupCon, criterionSimilarity, optimizer, scaler, epoch,
         with torch.cuda.amp.autocast(True):
             if Con_method=='0Similarity1SimCLR':
                 loss1 = criterionSimilarity(features_label0)#no negative features
-                loss2 = criterionSupCon(features_label1) # this is actually Sim CLR  because we didn't provide labels
+                loss2 = criterionSimCLR(features_label1) # this is actually Sim CLR  because we didn't provide labels
             elif Con_method=='0SimCLR1Similarity':
-                loss2 = criterionSupCon(features_label0)# this is actually Sim CLR because we didn't provide labels
+                loss2 = criterionSimCLR(features_label0)# this is actually Sim CLR because we didn't provide labels
                 loss1 = criterionSimilarity(features_label1) #no negative features 
             loss=SimLoss_weight*loss1+loss2
 
@@ -658,7 +659,7 @@ def main():
 
     # build model and criterion
     # criterion is the loss function(need to load input later)
-    model, criterionSupCon, criterionSimilarity = set_model(opt,local_rank)#GPU_related
+    model, criterionSimCLR, criterionSimilarity = set_model(opt,local_rank)#GPU_related
 
     # build optimizer
     optimizer = set_optimizer(opt, model)
@@ -749,11 +750,11 @@ def main():
         # train for one epoch
         time1 = time.time()
         if opt.dataset == 'Camelyon16':
-            loss, loss1, loss2 = train(model, criterionSupCon, criterionSimilarity, optimizer, scaler, epoch, opt, train_val_loader_normal, train_val_loader_tumor)
+            loss, loss1, loss2 = train(model, criterionSimCLR, criterionSimilarity, optimizer, scaler, epoch, opt, train_val_loader_normal, train_val_loader_tumor)
         elif opt.dataset == 'KidneyRVT':
-            loss, loss1, loss2 = train(model, criterionSupCon, criterionSimilarity, optimizer, scaler, epoch, opt, train_val_loader_normal, train_val_loader_RVT)
+            loss, loss1, loss2 = train(model, criterionSimCLR, criterionSimilarity, optimizer, scaler, epoch, opt, train_val_loader_normal, train_val_loader_RVT)
         elif opt.dataset == 'KidneyMeta415':
-            loss, loss1, loss2 = train(model, criterionSupCon, criterionSimilarity, optimizer, scaler, epoch, opt, train_val_loader_nonMeta, train_val_loader_Meta)
+            loss, loss1, loss2 = train(model, criterionSimCLR, criterionSimilarity, optimizer, scaler, epoch, opt, train_val_loader_nonMeta, train_val_loader_Meta)
         else:
             raise ValueError(f'Wrong {opt.dataset}')
 
